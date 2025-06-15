@@ -1,6 +1,7 @@
 # utils/schema_mapper.py
 import openai
 import json
+import os
 from sqlalchemy import inspect
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
