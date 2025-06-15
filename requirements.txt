@@ -1,0 +1,5 @@
+streamlit
+sqlalchemy
+openai
+psycopg2-binary  # for PostgreSQL
+mysql-connector-python  # for MySQL
