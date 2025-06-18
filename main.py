@@ -53,3 +53,13 @@ if st.button("Map and Migrate"):
             st.error(f"Migration failed: {e}")
     else:
         st.warning("Enter a table name.")
+
+        if st.button("Migrate Entire Database"):
+    try:
+        from utils.data_migrator import migrate_entire_db
+        results = migrate_entire_db(src_engine, tgt_engine)
+        st.subheader("🔁 Migration Results")
+        for tbl, status in results.items():
+            st.write(f"• **{tbl}**: {status}")
+    except Exception as e:
+        st.error(f"Full DB migration failed: {e}")

@@ -17,3 +17,19 @@ def migrate_data(src_engine, tgt_engine, table_name, mapping):
 
     conn_src.close()
     conn_tgt.close()
+    from sqlalchemy import inspect
+from .data_migrator import migrate_data
+from .schema_mapper import map_schemas
+
+def migrate_entire_db(src_engine, tgt_engine):
+    insp = inspect(src_engine)
+    tables = insp.get_table_names()
+    results = {}
+    for table in tables:
+        try:
+            mapping = map_schemas(src_engine, tgt_engine, table)
+            migrate_data(src_engine, tgt_engine, table, mapping)
+            results[table] = "✅ Migrated"
+        except Exception as e:
+            results[table] = f"❌ Failed: {e}"
+    return results
