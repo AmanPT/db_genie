@@ -26,10 +26,11 @@ if st.button("Connect to Databases"):
     try:
         src_engine, src_metadata = connect_to_db(src_uri)
         tgt_engine, tgt_metadata = connect_to_db(tgt_uri)
+        st.session_state['src_engine'] = src_engine
+        st.session_state['tgt_engine'] = tgt_engine
         st.success("Connected to both databases!")
     except Exception as e:
         st.error(f"Connection failed: {e}")
-
 # 2. Optimize a SQL Query
 st.header("⚡ Query Optimizer")
 query = st.text_area("Paste your SQL query to optimize")
@@ -44,23 +45,29 @@ if st.button("Optimize Query"):
 st.header("🔄 Schema Mapper & Migrator")
 table_name = st.text_input("Table name to migrate")
 if st.button("Map and Migrate"):
-    if table_name:
-        try:
-            mapping = map_schemas(src_engine, tgt_engine, table_name)
-            migrate_data(src_engine, tgt_engine, table_name, mapping)
-            st.success("Data migrated successfully using AI-mapped schema!")
-        except Exception as e:
-            st.error(f"Migration failed: {e}")
+    if 'src_engine' in st.session_state and 'tgt_engine' in st.session_state:
+        if table_name:
+            try:
+                mapping = map_schemas(st.session_state['src_engine'], st.session_state['tgt_engine'], table_name)
+                migrate_data(st.session_state['src_engine'], st.session_state['tgt_engine'], table_name, mapping)
+                st.success("Data migrated successfully!")
+            except Exception as e:
+                st.error(f"Migration failed: {e}")
         else:
             st.warning("Enter a table name.")
+    else:
+        st.warning("Please connect to the databases first.")
     
     # 4. Migrate Entire Database
     if st.button("Migrate Entire Database"):
+    if 'src_engine' in st.session_state and 'tgt_engine' in st.session_state:
         try:
             from utils.data_migrator import migrate_entire_db
-            results = migrate_entire_db(src_engine, tgt_engine)
+            results = migrate_entire_db(st.session_state['src_engine'], st.session_state['tgt_engine'])
             st.subheader("🔁 Migration Results")
             for tbl, status in results.items():
                 st.write(f"• **{tbl}**: {status}")
         except Exception as e:
             st.error(f"Full DB migration failed: {e}")
+    else:
+        st.warning("Please connect to the databases first.")
