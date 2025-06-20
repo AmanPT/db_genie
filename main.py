@@ -60,14 +60,14 @@ if st.button("Map and Migrate"):
     
     # 4. Migrate Entire Database
     if st.button("Migrate Entire Database"):
-    if 'src_engine' in st.session_state and 'tgt_engine' in st.session_state:
-        try:
-            from utils.data_migrator import migrate_entire_db
-            results = migrate_entire_db(st.session_state['src_engine'], st.session_state['tgt_engine'])
-            st.subheader("🔁 Migration Results")
-            for tbl, status in results.items():
-                st.write(f"• **{tbl}**: {status}")
-        except Exception as e:
-            st.error(f"Full DB migration failed: {e}")
-    else:
-        st.warning("Please connect to the databases first.")
+        if 'src_engine' in st.session_state and 'tgt_engine' in st.session_state:
+            try:
+                from utils.data_migrator import migrate_entire_db
+                results = migrate_entire_db(st.session_state['src_engine'], st.session_state['tgt_engine'])
+                st.subheader("🔁 Migration Results")
+                for tbl, status in results.items():
+                    st.write(f"• **{tbl}**: {status}")
+            except Exception as e:
+                st.error(f"Full DB migration failed: {e}")
+        else:
+            st.warning("Please connect to the databases first.")
